@@ -76,3 +76,11 @@ class Date:
                                                  self.minute,
                                                  self.second)
 
+    def file_str(self):
+        return '{0}{1}{2}T{3}{4}{5}Z'.format(self.year,
+                                                 self.month,
+                                                 self.day,
+                                                 self.hour,
+                                                 self.minute,
+                                                 self.second)
+

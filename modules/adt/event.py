@@ -1,4 +1,4 @@
-from date import Date
+from modules.adt.date import Date
 
 BODIES_NAMES = {
     'solar': 'Sun',
@@ -29,13 +29,16 @@ class Event:
         return self.start_time>other.start_time
 
     def __eq__(self, other):
-        return self.start_time==other.start_time
+        return self.start_time==other.start_time and \
+               self.event_type == other.event_type and \
+               self.url == other.url
 
     def get_bodies(self):
         """
         Find celestial bodies mentioned in description
         :return:
         """
+        pass
 
     def __repr__(self):
         return str(self)

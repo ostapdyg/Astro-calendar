@@ -1,5 +1,6 @@
 from modules.adt.array import TwoDimArray
 from modules.adt.event import Event
+from os import path
 
 class Calendar:
     @classmethod
@@ -9,6 +10,7 @@ class Calendar:
         :param filename: str
         :return: Calendar object
         """
+        filename = path.abspath(filename)
         with open(filename, 'r') as input_file:
             line = ''
             if not calendar:
@@ -21,6 +23,14 @@ class Calendar:
                     calendar.add_event(event)
                 line = input_file.readline()
         return calendar
+
+    def write_to_file(self, filename):
+        filename = path.abspath(filename)
+        with open(filename, 'w') as output_file:
+            for event in self:
+                output_file.writelines(['BEGIN:VEVENT',
+                                        'DTSTART:'])
+
 
     @staticmethod
     def read_event(input_file):
@@ -42,9 +52,9 @@ class Calendar:
             if line.startswith('SUMMARY:'):
                 event_type = line.split(':')[1][:-1]
             if line.startswith('DESCRIPTION:'):
-                description = line.split(':')[1][:-1]
+                description = line.split(':')[1].split('.')[0]+'.'
             if line.startswith('URL:'):
-                url = line.split(':')[1][:-1]
+                url = ''.join(line.split(':')[1:])[:-1]
         if start_date and event_type and description:
             return Event(event_type, start_date, description, url)
         return None
@@ -65,6 +75,12 @@ class Calendar:
             self._years[year] = Calendar.CalendarYear(year)
             self._years[year].add_event(event)
 
+    def remove_event(self, event):
+        if not isinstance(event, Event):
+            raise TypeError
+        if event in self.get_for_date(event.start_time):
+            self.get_for_date(event.start_time).remove(event)
+
     def get_for_date(self, date):
         """
         Returns all events for some day
@@ -73,7 +89,7 @@ class Calendar:
         """
         year = date.year
         if year in self._years:
-            return self._years[date.month, date.day]
+            return self._years[year][date.month, date.day]
 
     def __str__(self):
         res = ''
@@ -83,6 +99,9 @@ class Calendar:
 
     def __iter__(self):
         return self.CalendarIterator(self._years)
+
+    def __contains__(self, item):
+        return item in self.get_for_date(item.date)
 
     class CalendarYear:
         """
@@ -108,8 +127,13 @@ class Calendar:
                 raise TypeError
             if event.start_time.year != self.year:
                 raise ValueError('Wrong event year')
+            for ev in self._months[event.start_time.month][
+                                    event.start_time.day]:
+                if ev == event:
+                    return
             self._months[event.start_time.month][
                 event.start_time.day].append(event)
+
 
         def __getitem__(self, d):
             """
@@ -162,12 +186,13 @@ class Calendar:
         def __init__(self, years):
             self._years = years
             self._years_nums = sorted(self._years.keys())
-            if not self._years_nums:
-                raise StopIteration
-            self.pos = 0
-            self.cur_iterator = self._years[self._years_nums[self.pos]].__iter__()
+            if self._years_nums:
+                self.pos = 0
+                self.cur_iterator = self._years[self._years_nums[self.pos]].__iter__()
 
         def __next__(self):
+            if not self._years_nums:
+                raise StopIteration
             try:
                 return self.cur_iterator.__next__()
             except StopIteration:
@@ -182,5 +207,4 @@ class Calendar:
 
 
 
-a = Calendar.create_from_file('ical_2020.php')
-print(len(str(a._years[2020]).split('\n')))
+
