@@ -1,4 +1,4 @@
-from modules.adt.date import Date
+from modules.adt import Date
 
 BODIES_NAMES = {
     'solar': 'Sun',

@@ -1,5 +1,6 @@
-from modules.adt.array import TwoDimArray
-from modules.adt.event import Event
+from modules.adt import Date
+from modules.adt import TwoDimArray
+from modules.adt import Event
 from os import path
 
 class Calendar:
@@ -10,26 +11,42 @@ class Calendar:
         :param filename: str
         :return: Calendar object
         """
+        if not calendar:
+            calendar = Calendar()
+        calendar.add_from_file(filename)
+        return calendar
+
+    def add_from_file(self, filename):
+        """
+        Add to a calendar events from the file
+        :param filename: str
+        :return: Calendar object
+        """
         filename = path.abspath(filename)
         with open(filename, 'r') as input_file:
             line = ''
-            if not calendar:
-                calendar = Calendar()
             while not line.startswith('BEGIN:VEVENT'):
                 line = input_file.readline()
             while not line.startswith('END:VCALENDAR'):
-                event = cls.read_event(input_file)
+                event = self.read_event(input_file)
                 if event:
-                    calendar.add_event(event)
+                    self.add_event(event)
                 line = input_file.readline()
-        return calendar
+        return
 
     def write_to_file(self, filename):
         filename = path.abspath(filename)
         with open(filename, 'w') as output_file:
             for event in self:
-                output_file.writelines(['BEGIN:VEVENT',
-                                        'DTSTART:'])
+                output_file.writelines(['BEGIN:VEVENT\n',
+                                        'DTSTART:' +
+                                        event.start_time.file_str()+'\n',
+                                        'SUMMARY:'+event.event_type+'\n',
+                                        'DESCRIPTION:'+event.description+'\n',
+                                        'URL:'+event.url+'\n',
+                                        'END:VEVENT\n'
+                                        ])
+            output_file.write('END:VCALENDAR')
 
 
     @staticmethod
@@ -54,7 +71,7 @@ class Calendar:
             if line.startswith('DESCRIPTION:'):
                 description = line.split(':')[1].split('.')[0]+'.'
             if line.startswith('URL:'):
-                url = ''.join(line.split(':')[1:])[:-1]
+                url = ':'.join(line.split(':')[1:])[:-1]
         if start_date and event_type and description:
             return Event(event_type, start_date, description, url)
         return None
@@ -87,6 +104,8 @@ class Calendar:
         :param date:
         :return:
         """
+        if type(date) == str:
+            date = Date.date_from_str(date)
         year = date.year
         if year in self._years:
             return self._years[year][date.month, date.day]

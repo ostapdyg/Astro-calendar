@@ -7,8 +7,8 @@ class Date:
     def date_from_str(cls, s):
         """
         Creates a Date object from a string
-        :param s: string in a format yyyymmddThhmmss
-        (year+month+day+T+hour+minute+second)
+        :param s: string in a format yyyymmddThhmmssZ
+        (year+month+day+T+hour+minute+second+Z)
         :return: a Date object
         """
         try:
@@ -77,10 +77,14 @@ class Date:
                                                  self.second)
 
     def file_str(self):
-        return '{0}{1}{2}T{3}{4}{5}Z'.format(self.year,
+        """
+        Return a string representation of a date in format yyyymmddThhmmssZ
+        :return:str
+        """
+        return '{0:4}{1:2}{2:2}T{3:2}{4:2}{5:}Z'.format(self.year,
                                                  self.month,
                                                  self.day,
                                                  self.hour,
                                                  self.minute,
-                                                 self.second)
+                                                 self.second).replace(' ', '0')
 

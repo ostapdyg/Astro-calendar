@@ -80,6 +80,7 @@ class MainMenu:
         self.help_menu = tk.Menu(self.main_menu, tearoff=0)
         self.file_menu.add_separator()
         self.file_menu.add_command(label='Quit', command=self.master.quit)
+
         self.help_menu.add_command(label='Help Index', command=HelpIndex)
         self.help_menu.add_command(label='About...', command=About)
         self.main_menu.add_cascade(label='File', menu=self.file_menu)

@@ -1,0 +1,25 @@
+BEGIN:VEVENT
+DTSTART:20200102T013127Z
+SUMMARY:The Moon at apogee
+DESCRIPTION:The Moon appears small as it recedes to its furthest point from the Earth.
+URL:https://in-the-sky.org/news.php?id=20200102_08_100
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20200102T235737Z
+SUMMARY:M41 is well placed
+DESCRIPTION:The open star cluster M41 (NGC 2287) in Canis Major is well placed for observation.
+URL:https://in-the-sky.org/news.php?id=20200102_16_100
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20200103T044721Z
+SUMMARY:Moon at First Quarter
+DESCRIPTION:The Moon appears high in the sky at sunset and sets in the west at around midnight.
+URL:https://in-the-sky.org/news.php?id=20200103_08_100
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20200301T01011Z
+SUMMARY:Test Event
+DESCRIPTION:Test Event
+URL:www.testurl
+END:VEVENT
+END:VCALENDAR
