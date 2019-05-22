@@ -24,10 +24,14 @@ class Calendar:
         """
         filename = path.abspath(filename)
         with open(filename, 'r') as input_file:
-            line = ''
+            line = ' '
             while not line.startswith('BEGIN:VEVENT'):
+                if line == '':
+                    return
                 line = input_file.readline()
             while not line.startswith('END:VCALENDAR'):
+                if line == '':
+                    return
                 event = self.read_event(input_file)
                 if event:
                     self.add_event(event)
@@ -57,12 +61,14 @@ class Calendar:
         :param input_file: file object
         :return: Event object
         """
-        line = ''
+        line = ' '
         start_date = ''
         description = ''
         event_type = ''
         url = ''
         while not line.startswith('END:VEVENT'):
+            if line=='':
+                return
             line = input_file.readline()
             if line.startswith('DTSTART:'):
                 start_date = line.split(':')[1][:-2]
