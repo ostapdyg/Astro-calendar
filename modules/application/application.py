@@ -4,11 +4,13 @@ from modules.application import *
 class Application:
     def __init__(self, root):
         self.main_menu = MainMenu(root, self)
-        print(0)
-        self.cal1 = CalendarWindow(root, self, 'data/ical_2020.php')
-        print(1)
-        self.cal2 = CalendarWindow(root, self, 'data/ical_2020.php')
-        print(2)
+        self.cals = [None, None]
+        self.cals[0] = CalendarWindow(root, self, 'data/ical_2020.php', 0)
+        self.cals[1] = CalendarWindow(root, self, 'user_cals/defaultcal.cal',
+                                      1)
+
+
+
 
 
 class MainMenu:
@@ -23,6 +25,7 @@ class MainMenu:
         self.help_menu.add_command(label='About...', command=About)
         self.main_menu.add_cascade(label='File', menu=self.file_menu)
         self.main_menu.add_cascade(label='Help', menu=self.help_menu)
+        self.file_menu.add_command(label='Quit', command=self.master.quit)
         self.master.configure(menu=self.main_menu)
 
 def main():
