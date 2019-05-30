@@ -1,0 +1,31 @@
+BEGIN:VEVENT
+DTSTART:20200102T013127Z
+SUMMARY:The Moon at apogee
+DESCRIPTION:The Moon appears small as it recedes to its furthest point from the Earth.
+URL:https://in-the-sky.org/news.php?id=20200102_08_100
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20200102T235737Z
+SUMMARY:M41 is well placed
+DESCRIPTION:The open star cluster M41 (NGC 2287) in Canis Major is well placed for observation.
+URL:https://in-the-sky.org/news.php?id=20200102_16_100
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20200103T044721Z
+SUMMARY:Moon at First Quarter
+DESCRIPTION:The Moon appears high in the sky at sunset and sets in the west at around midnight.
+URL:https://in-the-sky.org/news.php?id=20200103_08_100
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20200110T150240Z
+SUMMARY:Mercury at superior solar conjunction
+DESCRIPTION:Mercury passes around the far side of the Sun.
+URL:https://in-the-sky.org/news.php?id=20200110_11_100
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20200110T191059Z
+SUMMARY:Penumbral lunar eclipse
+DESCRIPTION:There will be an eclipse of the Moon, visible from Africa, Oceania, Asia, Europe and Northern America.
+URL:https://in-the-sky.org/news.php?id=20200110_09_100
+END:VEVENT
+END:VCALENDAR
