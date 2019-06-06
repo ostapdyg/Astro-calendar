@@ -78,7 +78,7 @@ class CalendarWindow:
         for year in range(from_year, to_year+1):
             self.calendar.add_from_file('data/ical_{}.php'.format(str(year)))
         self.update_events()
-        self.name = 'All events from {} to {}'.format(from_year, to_year)
+        self.name = 'Events {} to {}'.format(from_year, to_year)
         self.menu.name_label.config(text=self.name)
 
     def add_to_other(self):
@@ -158,7 +158,7 @@ class CalendarMenu(tk.Frame):
         file_menu['menu'] = file_menu.menu
         file_menu.menu.add_command(label='Save...', command=self.window.save)
         file_menu.menu.add_command(label='Load...', command=self.window.load)
-        file_menu.menu.add_command(label="Load all events...",
+        file_menu.menu.add_command(label="Load years...",
                                    command=self.on_load_all)
         self.delete_im = tk.PhotoImage(file="images/delete.gif")
         delete_button = tk.Button(self, image=self.delete_im, height=21,
@@ -204,7 +204,8 @@ class LoadAllEventsWindow:
         self.frame.pack(fill='both', expand=True)
 
     def load_events(self):
-            self.window.load_all(self.from_scale.get(), self.to_scale.get())
+            # self.window.load_all(self.from_scale.get(), self.to_scale.get())
+            self.window.load_all(self.from_scale.get(), self.from_scale.get())
             self.close()
 
     def close(self, event=None):
@@ -214,7 +215,6 @@ class LoadAllEventsWindow:
 
     def __bool__(self):
         return self.master is not None
-
 
     def on_from_scale(self, event):
         f = self.from_scale.get()

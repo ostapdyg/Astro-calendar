@@ -10,9 +10,6 @@ class Application:
                                       1)
 
 
-
-
-
 class MainMenu:
     def __init__(self, master, window):
         self.master = master
@@ -28,10 +25,12 @@ class MainMenu:
         self.file_menu.add_command(label='Quit', command=self.master.quit)
         self.master.configure(menu=self.main_menu)
 
+
 def main():
     root = tk.Tk()
     app = Application(root)
     root.mainloop()
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     main()
