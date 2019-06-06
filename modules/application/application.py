@@ -5,7 +5,7 @@ class Application:
     def __init__(self, root):
         self.main_menu = MainMenu(root, self)
         self.cals = [None, None]
-        self.cals[0] = CalendarWindow(root, self, 'data/ical_2020.php', 0)
+        self.cals[0] = CalendarWindow(root, self, 'data/ical_2019.php', 0)
         self.cals[1] = CalendarWindow(root, self, 'user_cals/defaultcal.cal',
                                       1)
 

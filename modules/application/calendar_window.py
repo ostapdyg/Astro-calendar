@@ -11,7 +11,7 @@ class CalendarWindow:
         self.master = master
         self.num = num
         if filename:
-            self.name = filename
+            self.name = r'/'.join(filename.split('/')[-2:])
         else:
             self.name = 'New calendar'
         self.top_frame = tk.Frame(self.master, borderwidth=2, relief='ridge')
@@ -39,7 +39,12 @@ class CalendarWindow:
                 self.calendar.remove_event(event_widget.event)
         self.update_events()
 
-    def unselect_events(self):
+    def select_all(self, event=None):
+        for event_widget in self.events:
+            if not event_widget.selected:
+                event_widget.select()
+
+    def unselect_all(self, event=None):
         for event_widget in self.events:
             if event_widget.selected:
                 event_widget.select()
@@ -54,8 +59,13 @@ class CalendarWindow:
         if filename:
             self.calendar = self.calendar.create_from_file(filename)
             self.update_events()
-            self.name = filename
+            self.name = r'/'.join(filename.split('/')[-2:])
             self.menu.name_label.config(text=self.name)
+
+    def new_cal(self):
+        self.calendar = Calendar()
+        self.update_events()
+        self.menu.name_label.config(text='New calendar')
 
     def save(self):
         filename = filedialog.asksaveasfilename(title='Save as...',
@@ -68,7 +78,7 @@ class CalendarWindow:
                                                     'user_cals'))
         if filename:
             self.calendar.write_to_file(filename)
-            self.name = filename
+            self.name = r'/'.join(filename.split('/')[-2:])
             self.menu.name_label.config(text=self.name)
 
     def load_all(self, from_year, to_year=0):
@@ -87,7 +97,8 @@ class CalendarWindow:
             if event_widget.selected:
                 self.app.cals[other_num].calendar.add_event(event_widget.event)
         self.app.cals[other_num].update_events()
-        self.unselect_events()
+        self.unselect_all()
+
 
 
 class EventWidget(tk.Frame):
@@ -127,6 +138,7 @@ class EventWidget(tk.Frame):
         EventWindow(self)
 
     def select(self, event=None):
+        print(self)
         if not self.selected:
             if not self.sb_var.get():
                 self.sb_var.set(True)
@@ -151,11 +163,12 @@ class CalendarMenu(tk.Frame):
         self.config(relief='ridge', borderwidth=1, height=20)
         self.window = window
         self.load_all_events_window = None
-        self.name_label = tk.Label(self, text=self.window.name)
+        self.name_label = tk.Label(self, text=self.window.name, width=20)
         file_menu = tk.Menubutton(self, text='File  ', anchor='nw',
                                   relief='raised', underline=0, borderwidth=1)
         file_menu.menu = tk.Menu(file_menu)
         file_menu['menu'] = file_menu.menu
+        file_menu.menu.add_command(label='New', command=self.window.new_cal)
         file_menu.menu.add_command(label='Save...', command=self.window.save)
         file_menu.menu.add_command(label='Load...', command=self.window.load)
         file_menu.menu.add_command(label="Load years...",
@@ -163,15 +176,20 @@ class CalendarMenu(tk.Frame):
         self.delete_im = tk.PhotoImage(file="images/delete.gif")
         delete_button = tk.Button(self, image=self.delete_im, height=21,
                                   width=21,
-                                  borderwidth=1,
+                                  borderwidth=0,
                                   command=self.window.update_events)
         self.copy_im = tk.PhotoImage(file="images/copy.gif")
         copy_button = tk.Button(self, image=self.copy_im, height=21,
                                 width=21,
-                                borderwidth=1,
+                                borderwidth=0,
                                 command=self.window.add_to_other)
+        self.select_button = tk.Button(self, text='Select all', borderwidth=0,
+                                       command=self.on_select_all, width=8,
+                                       relief='ridge', height=1)
+
         self.pack(fill='x', expand=True)
         file_menu.pack(side='left', fill='x', anchor='nw')
+        self.select_button.pack(side='left', fill='none')
         delete_button.pack(side='left', fill='none')
         copy_button.pack(side='left', fill='none')
         self.name_label.pack(anchor='ne')
@@ -179,6 +197,16 @@ class CalendarMenu(tk.Frame):
     def on_load_all(self):
         if not self.load_all_events_window:
             self.load_all_events_window = LoadAllEventsWindow(self.window)
+
+    def on_select_all(self, event=None):
+        self.select_button.config(text='Deselect all',
+                                  command=self.on_unselect_all)
+        self.window.select_all()
+
+    def on_unselect_all(self, event=None):
+        self.select_button.config(text='Select all',
+                                  command=self.on_select_all)
+        self.window.unselect_all()
 
 
 class LoadAllEventsWindow:
@@ -199,8 +227,10 @@ class LoadAllEventsWindow:
                                text='Ok', command=self.load_events)
         self.bt_cancel = tk.Button(self.master,
                                    text='Cancel', command=self.close)
+
         self.bt_ok.pack(side='right', anchor='se', padx=20, pady=3)
         self.bt_cancel.pack(side='left', anchor='sw', padx=20, pady=3)
+
         self.frame.pack(fill='both', expand=True)
 
     def load_events(self):
