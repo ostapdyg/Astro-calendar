@@ -189,7 +189,7 @@ class CalendarMenu(tk.Frame):
 
         self.pack(fill='x', expand=True)
         file_menu.pack(side='left', fill='x', anchor='nw')
-        self.select_button.pack(side='left', fill='none')
+        # self.select_button.pack(side='left', fill='none')
         delete_button.pack(side='left', fill='none')
         copy_button.pack(side='left', fill='none')
         self.name_label.pack(anchor='ne')
