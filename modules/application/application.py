@@ -5,12 +5,9 @@ class Application:
     def __init__(self, root):
         self.main_menu = MainMenu(root, self)
         self.cals = [None, None]
-        self.cals[0] = CalendarWindow(root, self, 'data/ical_2020.php', 0)
+        self.cals[0] = CalendarWindow(root, self, 'data/ical_2019.php', 0)
         self.cals[1] = CalendarWindow(root, self, 'user_cals/defaultcal.cal',
                                       1)
-
-
-
 
 
 class MainMenu:
@@ -28,10 +25,12 @@ class MainMenu:
         self.file_menu.add_command(label='Quit', command=self.master.quit)
         self.master.configure(menu=self.main_menu)
 
+
 def main():
     root = tk.Tk()
     app = Application(root)
     root.mainloop()
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     main()
