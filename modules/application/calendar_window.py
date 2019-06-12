@@ -100,7 +100,6 @@ class CalendarWindow:
         self.unselect_all()
 
 
-
 class EventWidget(tk.Frame):
     BG = '#ffe7dc'
     BG_SELECTED = '#ceceb6'
@@ -138,7 +137,6 @@ class EventWidget(tk.Frame):
         EventWindow(self)
 
     def select(self, event=None):
-        print(self)
         if not self.selected:
             if not self.sb_var.get():
                 self.sb_var.set(True)
