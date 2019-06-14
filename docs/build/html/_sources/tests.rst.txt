@@ -1,0 +1,22 @@
+tests package
+=============
+
+Submodules
+----------
+
+tests.test\_calendar module
+---------------------------
+
+.. automodule:: tests.test_calendar
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: tests
+   :members:
+   :undoc-members:
+   :show-inheritance:
