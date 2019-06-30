@@ -1,6 +1,6 @@
-from modules.adt import *
+from modules import *
 
-cal1 = Calendar.create_from_file('ical_2020.php')
+cal1 = Calendar.create_from_file('data/ical_2020.php')
 for event in cal1:
     print(event.description)
 

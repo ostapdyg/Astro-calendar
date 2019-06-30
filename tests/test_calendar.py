@@ -1,4 +1,4 @@
-from modules import *
+from .modules import *
 import unittest
 
 
@@ -17,5 +17,5 @@ class test_file_io(unittest.TestCase):
             self.assertEqual(events1[i], events2[i])
 
 
-
-unittest.main()
+if __name__=='__main__':
+    unittest.main()

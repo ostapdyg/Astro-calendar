@@ -1,0 +1,335 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>modules.adt.Calendar &#8212; Astro-Calendar 0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for modules.adt.Calendar</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">modules.adt</span> <span class="k">import</span> <span class="n">Date</span>
+<span class="kn">from</span> <span class="nn">modules.adt</span> <span class="k">import</span> <span class="n">TwoDimArray</span>
+<span class="kn">from</span> <span class="nn">modules.adt</span> <span class="k">import</span> <span class="n">Event</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">path</span>
+
+<div class="viewcode-block" id="Calendar"><a class="viewcode-back" href="../../../modules.adt.html#modules.adt.Calendar.Calendar">[docs]</a><span class="k">class</span> <span class="nc">Calendar</span><span class="p">:</span>
+<div class="viewcode-block" id="Calendar.create_from_file"><a class="viewcode-back" href="../../../modules.adt.html#modules.adt.Calendar.Calendar.create_from_file">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">create_from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">calendar</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new or add to existing Calendar based on file</span>
+<span class="sd">        :param filename: str</span>
+<span class="sd">        :return: Calendar object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">calendar</span><span class="p">:</span>
+            <span class="n">calendar</span> <span class="o">=</span> <span class="n">Calendar</span><span class="p">()</span>
+        <span class="n">calendar</span><span class="o">.</span><span class="n">add_from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">calendar</span></div>
+
+<div class="viewcode-block" id="Calendar.add_from_file"><a class="viewcode-back" href="../../../modules.adt.html#modules.adt.Calendar.Calendar.add_from_file">[docs]</a>    <span class="k">def</span> <span class="nf">add_from_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add to a calendar events from the file</span>
+<span class="sd">        :param filename: str</span>
+<span class="sd">        :return: Calendar object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">input_file</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;BEGIN:VEVENT&#39;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                    <span class="k">return</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">input_file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;END:VCALENDAR&#39;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                    <span class="k">return</span>
+                <span class="n">event</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_event</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">event</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">input_file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="Calendar.write_to_file"><a class="viewcode-back" href="../../../modules.adt.html#modules.adt.Calendar.Calendar.write_to_file">[docs]</a>    <span class="k">def</span> <span class="nf">write_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_file</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="n">output_file</span><span class="o">.</span><span class="n">writelines</span><span class="p">([</span><span class="s1">&#39;BEGIN:VEVENT</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+                                        <span class="s1">&#39;DTSTART:&#39;</span> <span class="o">+</span>
+                                        <span class="n">event</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">file_str</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+                                        <span class="s1">&#39;SUMMARY:&#39;</span><span class="o">+</span><span class="n">event</span><span class="o">.</span><span class="n">event_type</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+                                        <span class="s1">&#39;DESCRIPTION:&#39;</span><span class="o">+</span><span class="n">event</span><span class="o">.</span><span class="n">description</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+                                        <span class="s1">&#39;URL:&#39;</span><span class="o">+</span><span class="n">event</span><span class="o">.</span><span class="n">url</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+                                        <span class="s1">&#39;END:VEVENT</span><span class="se">\n</span><span class="s1">&#39;</span>
+                                        <span class="p">])</span>
+            <span class="n">output_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;END:VCALENDAR&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Calendar.read_event"><a class="viewcode-back" href="../../../modules.adt.html#modules.adt.Calendar.Calendar.read_event">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">read_event</span><span class="p">(</span><span class="n">input_file</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read one event from file</span>
+<span class="sd">        Precondition: pointer is after BEGIN:VEVENT</span>
+<span class="sd">        :param input_file: file object</span>
+<span class="sd">        :return: Event object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
+        <span class="n">start_date</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">event_type</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;END:VEVENT&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">==</span><span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">input_file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;DTSTART:&#39;</span><span class="p">):</span>
+                <span class="n">start_date</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;SUMMARY:&#39;</span><span class="p">):</span>
+                <span class="n">event_type</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;DESCRIPTION:&#39;</span><span class="p">):</span>
+                <span class="n">description</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;.&#39;</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;URL:&#39;</span><span class="p">):</span>
+                <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:])[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">start_date</span> <span class="ow">and</span> <span class="n">event_type</span> <span class="ow">and</span> <span class="n">description</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Event</span><span class="p">(</span><span class="n">event_type</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_years</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Calendar.add_event"><a class="viewcode-back" href="../../../modules.adt.html#modules.adt.Calendar.Calendar.add_event">[docs]</a>    <span class="k">def</span> <span class="nf">add_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add an event to calendar</span>
+<span class="sd">        :param event:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">year</span>
+        <span class="k">if</span> <span class="n">year</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_years</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_years</span><span class="p">[</span><span class="n">year</span><span class="p">]</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_years</span><span class="p">[</span><span class="n">year</span><span class="p">]</span> <span class="o">=</span> <span class="n">Calendar</span><span class="o">.</span><span class="n">CalendarYear</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_years</span><span class="p">[</span><span class="n">year</span><span class="p">]</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Calendar.remove_event"><a class="viewcode-back" href="../../../modules.adt.html#modules.adt.Calendar.Calendar.remove_event">[docs]</a>    <span class="k">def</span> <span class="nf">remove_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">Event</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span>
+        <span class="k">if</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_for_date</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">start_time</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_for_date</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Calendar.get_for_date"><a class="viewcode-back" href="../../../modules.adt.html#modules.adt.Calendar.Calendar.get_for_date">[docs]</a>    <span class="k">def</span> <span class="nf">get_for_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns all events for some day</span>
+<span class="sd">        :param date:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">date</span> <span class="o">=</span> <span class="n">Date</span><span class="o">.</span><span class="n">date_from_str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">year</span>
+        <span class="k">if</span> <span class="n">year</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_years</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_years</span><span class="p">[</span><span class="n">year</span><span class="p">][</span><span class="n">date</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">day</span><span class="p">]</span></div>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">event</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="k">return</span> <span class="n">res</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CalendarIterator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_years</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_for_date</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">date</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Calendar.CalendarYear"><a class="viewcode-back" href="../../../modules.adt.html#modules.adt.Calendar.Calendar.CalendarYear">[docs]</a>    <span class="k">class</span> <span class="nc">CalendarYear</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper class for Calendar;</span>
+<span class="sd">        Stores events for one year</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">year</span> <span class="o">=</span> <span class="n">year</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_months</span> <span class="o">=</span> <span class="n">TwoDimArray</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">13</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">day</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">32</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_months</span><span class="p">[</span><span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_months</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Calendar.CalendarYear.add_event"><a class="viewcode-back" href="../../../modules.adt.html#modules.adt.Calendar.Calendar.CalendarYear.add_event">[docs]</a>        <span class="k">def</span> <span class="nf">add_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Adds event to the calendar</span>
+<span class="sd">            :param event: Event object</span>
+<span class="sd">            :return:</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">Event</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">year</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">year</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Wrong event year&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_months</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">month</span><span class="p">][</span>
+                                    <span class="n">event</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">day</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">ev</span> <span class="o">==</span> <span class="n">event</span><span class="p">:</span>
+                    <span class="k">return</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_months</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">month</span><span class="p">][</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">day</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+
+
+        <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return list of events for given month and day</span>
+<span class="sd">            :param d: tuple of two ints, representing month and day</span>
+<span class="sd">            :return:</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_months</span><span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+
+        <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Calendar</span><span class="o">.</span><span class="n">YearIterator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_months</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="n">res</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">event</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="Calendar.YearIterator"><a class="viewcode-back" href="../../../modules.adt.html#modules.adt.Calendar.Calendar.YearIterator">[docs]</a>    <span class="k">class</span> <span class="nc">YearIterator</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Helper class for the Calendar.__iter__ method</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">months</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_months</span> <span class="o">=</span> <span class="n">months</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cur_month</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cur_day</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cur_pos</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">def</span> <span class="nf">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_pos</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_months</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_month</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_day</span><span class="p">]):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cur_day</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cur_month</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_day</span><span class="o">//</span><span class="mi">32</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cur_day</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_day</span><span class="o">%</span><span class="mi">32</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cur_pos</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_month</span> <span class="o">&gt;</span> <span class="mi">12</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">StopIteration</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_months</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_month</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_day</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_pos</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cur_pos</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">return</span> <span class="n">res</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">StopIteration</span></div>
+
+<div class="viewcode-block" id="Calendar.CalendarIterator"><a class="viewcode-back" href="../../../modules.adt.html#modules.adt.Calendar.Calendar.CalendarIterator">[docs]</a>    <span class="k">class</span> <span class="nc">CalendarIterator</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper class for the CalendarYear.__iter__ method</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">years</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_years</span> <span class="o">=</span> <span class="n">years</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_years_nums</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_years</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_years_nums</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cur_iterator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_years</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_years_nums</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">]]</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_years_nums</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">StopIteration</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_iterator</span><span class="o">.</span><span class="fm">__next__</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cur_iterator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_years</span><span class="p">[</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_years_nums</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">]]</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__next__</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">StopIteration</span></div></div>
+
+
+
+
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Astro-Calendar</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Astro-Calendar</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, OstapDydalovych.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
