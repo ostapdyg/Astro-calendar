@@ -83,7 +83,7 @@ class Calendar:
         return None
 
     def __init__(self):
-        self._years = dict()
+        self._years = {}
 
     def add_event(self, event):
         """
@@ -92,11 +92,10 @@ class Calendar:
         :return:
         """
         year = event.start_time.year
-        if year in self._years:
-            self._years[year].add_event(event)
-        else:
+        if year not in self._years:
             self._years[year] = Calendar.CalendarYear(year)
-            self._years[year].add_event(event)
+
+        self._years[year].add_event(event)
 
     def remove_event(self, event):
         if not isinstance(event, Event):

@@ -10,10 +10,7 @@ class CalendarWindow:
         self.app = app
         self.master = master
         self.num = num
-        if filename:
-            self.name = r'/'.join(filename.split('/')[-2:])
-        else:
-            self.name = 'New calendar'
+        self.name = r'/'.join(filename.split('/')[-2:]) if filename else 'New calendar'
         self.top_frame = tk.Frame(self.master, borderwidth=2, relief='ridge')
         self.menu = CalendarMenu(self.top_frame, self)
         self.top_frame.pack(expand=True, side='left', fill='both')
